@@ -107,9 +107,8 @@ publish:
       fi
   rules:
     - if: '$CI_COMMIT_TAG =~ /^v\d+\.\d+\.\d+$/'
+      allow_failure: true
       when: manual
-    - when: manual
-  allow_failure: true
   artifacts:
     paths:
       - dist/

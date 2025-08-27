@@ -68,12 +68,14 @@ docs:sphinx:
   stage: build
   needs: ["linting:ruff"]
   <<: *uv_setup
+  variables:
+    SPHINX_OUTPUT: api-docs
   script:
     - uv sync --locked --group docs
-    - uv run sphinx-build -E -b html docs docs/_build/html
+    - uv run sphinx-build -E -b html docs $SPHINX_OUTPUT
   artifacts:
     paths:
-      - docs/_build/html/
+      - $SPHINX_OUTPUT
     expire_in: 1 week
 
 pages:coverage:
@@ -107,7 +109,7 @@ publish:
     - if: '$CI_COMMIT_TAG =~ /^v\d+\.\d+\.\d+$/'
       when: manual
     - when: manual
-  # allow_failure: true
+  allow_failure: true
   artifacts:
     paths:
       - dist/

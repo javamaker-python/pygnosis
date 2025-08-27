@@ -69,6 +69,7 @@ instance/
 .scrapy
 
 # Sphinx build output
+api-docs/
 docs/_build/
 docs/.doctrees/
 

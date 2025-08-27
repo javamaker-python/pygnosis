@@ -40,10 +40,10 @@ jobs:
         uv run pytest
 
     - name: Upload HTML coverage artifact
-      uses: codecov/codecov-action@v5
+      uses: actions/upload-artifact@v4
       with:
         name: coverage-html
-        directory: htmlcov/
+        path: htmlcov/
 
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v5

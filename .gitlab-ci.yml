@@ -54,7 +54,7 @@ testing:pytest:
 
 build:
   stage: build
-  needs: ["test"]
+  needs: ["testing:pytest"]
   <<: *uv_setup
   script:
     - uv sync --locked --group dev --group docs
@@ -68,7 +68,7 @@ build:
 
 pages:
   stage: pages
-  needs: ["test"]
+  needs: ["testing:pytest"]
   image: alpine:3.19
   script:
     - mv htmlcov/ public/

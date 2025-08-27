@@ -18,7 +18,7 @@ cache:
   image: python:3.10-slim
   before_script:
     - apt-get update -y && apt-get install -y --no-install-recommends curl ca-certificates git
-    - curl -LsSf https://astral.sh/uv/install.sh | sh -s -- -y
+    - curl -LsSf https://astral.sh/uv/install.sh | sh
     - export PATH="$HOME/.local/bin:$PATH"
 
 test:
@@ -79,7 +79,7 @@ publish:
         uv publish --token "$PYPI_TOKEN"
       fi
   rules:
-    - if: "$CI_COMMIT_TAG =~ /^v\d+\.\d+\.\d+$/"
+    - if: '$CI_COMMIT_TAG =~ /^v\d+\.\d+\.\d+$/'
       when: manual
     - when: manual
   variables:
@@ -88,4 +88,3 @@ publish:
     paths:
       - dist/
     expire_in: 7 days
-

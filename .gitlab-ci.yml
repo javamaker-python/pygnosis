@@ -21,14 +21,14 @@ cache:
     - curl -LsSf https://astral.sh/uv/install.sh | sh
     - export PATH="$HOME/.local/bin:$PATH"
 
-.build_rules: &build_rules
+.artifact_publisher: &artifact_publisher
   rules:
     - if: $CI_COMMIT_BRANCH == "main"
       allow_failure: true
       when: always
     - if: '$CI_COMMIT_TAG =~ /^v\d+\.\d+\.\d+$/'
       allow_failure: true
-      when: manual
+      when: always
 
 linting:ruff:
   stage: test
@@ -68,7 +68,7 @@ build:
   script:
     - uv sync --locked --group dev
     - uv build
-  <<: *build_rules
+  <<: *artifact_publisher
   artifacts:
     paths:
       - dist/
@@ -83,7 +83,7 @@ docs:sphinx:
   script:
     - uv sync --locked --group docs
     - uv run sphinx-build -E -b html docs $SPHINX_OUTPUT
-  <<: *build_rules
+  <<: *artifact_publisher
   artifacts:
     paths:
       - $SPHINX_OUTPUT
@@ -96,7 +96,7 @@ pages:coverage:
   script:
     - mv htmlcov/ public/
     - 'echo "Coverage report is available at: https://${CI_PROJECT_NAMESPACE}.gitlab.io/${CI_PROJECT_NAME}/"'
-  <<: *build_rules
+  <<: *artifact_publisher
   artifacts:
     paths:
       - public

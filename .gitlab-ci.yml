@@ -15,7 +15,7 @@ cache:
     - .venv/
 
 .uv_setup: &uv_setup
-  image: python:3.10-slim
+  image: python:3.11-slim
   before_script:
     - apt-get update -y && apt-get install -y --no-install-recommends curl ca-certificates git
     - curl -LsSf https://astral.sh/uv/install.sh | sh

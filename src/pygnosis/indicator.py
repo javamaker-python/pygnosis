@@ -18,12 +18,10 @@ class HealthIndicator(ABC):
     @abstractmethod
     def get_name(self) -> str:
         """Returns the name of the indicator."""
-        ...
 
     @abstractmethod
     async def get_health(self) -> Health:
         """Returns the health information."""
-        ...
 
 
 class HealthIndicatorProvider(ABC):
@@ -34,4 +32,3 @@ class HealthIndicatorProvider(ABC):
     @abstractmethod
     def get_health_indicator(self) -> HealthIndicator:
         """Returns the health indicator."""
-        ...

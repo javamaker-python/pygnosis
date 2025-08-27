@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "pygnosis"
-version = "0.1.0"
+version = "0.1.1"
 description = "A modern, composable health monitoring library for Python applications with hierarchical status aggregation, async support, and flexible configuration system."
 readme = "README.md"
 license = { file = "LICENSE" }
@@ -37,9 +37,6 @@ Homepage = "https://github.com/javamaker-python/pygnosis"
 Repository = "https://github.com/javamaker-python/pygnosis.git"
 "Bug Tracker" = "https://github.com/javamaker-python/pygnosis/issues"
 Changelog = "https://github.com/javamaker-python/pygnosis/blob/main/CHANGELOG.md"
-
-[tool.hatch.version]
-path = "src/pygnosis/__init__.py"
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/pygnosis"]
@@ -88,6 +85,6 @@ dev = [
 ]
 docs = [
     "sphinx>=7.0.0",
-    "sphinx-rtd-theme>=1.3.0",
+    "python-docs-theme>=2024.1.0",
     "sphinx-autodoc-typehints>=1.24.0",
 ]

@@ -1,6 +1,5 @@
 """Pygnosis - health monitoring library for Python applications."""
 
-__version__ = "0.1.0"
 __author__ = "Ilya Yushin"
 __email__ = "ilya.yushin@gmail.com"
 

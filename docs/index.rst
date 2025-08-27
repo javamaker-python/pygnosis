@@ -1,16 +1,19 @@
-Pygnosis documentation
-======================
+|project| documentation
+=======================
 
 Overview
 --------
 
-Pygnosis is a lightweight library for composing asynchronous health checks in Python services.
+|project| is a lightweight library for composing asynchronous health checks in Python services.
 
-Contents
---------
+API Reference
+-------------
 
 .. toctree::
-   :maxdepth: 2
-   :caption: Contents:
+   :maxdepth: 1
 
-   api/index
+   api/pygnosis
+   api/pygnosis.status
+   api/pygnosis.health
+   api/pygnosis.indicator
+   api/pygnosis.composed_indicator

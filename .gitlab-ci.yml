@@ -21,21 +21,36 @@ cache:
     - curl -LsSf https://astral.sh/uv/install.sh | sh
     - export PATH="$HOME/.local/bin:$PATH"
 
-test:
+linting:ruff:
+  stage: test
+  <<: *uv_setup
+  variables:
+    RUFF_OUTPUT: ruff-output.json
+  script:
+    - uv --version
+    - uv sync --locked --group dev
+    - uv run ruff check --output-format=gitlab src/ tests/ | tee $RUFF_OUTPUT
+  artifacts:
+    reports:
+      codequality: $RUFF_OUTPUT
+    paths:
+      - $RUFF_OUTPUT
+    expire_in: 1 week
+
+testing:pytest:
   stage: test
   <<: *uv_setup
   script:
     - uv --version
     - uv sync --locked --group dev
-    - uv run ruff check src/ tests/
-    - uv run pytest --cov=pygnosis --cov-report=xml --cov-report=html --junitxml=report.xml
+    - uv run pytest
+  coverage: '/^TOTAL.*\s+(\d+\%)/'
   artifacts:
     when: always
+    reports:
+      junit: report.xml
     paths:
-      - report.xml
-      - coverage.xml
       - htmlcov/
-    expire_in: 7 days
 
 build:
   stage: build
@@ -49,19 +64,18 @@ build:
     paths:
       - dist/
       - docs/_build/html/
-    expire_in: 7 days
+    expire_in: 1 week
 
 pages:
   stage: pages
   needs: ["test"]
   image: alpine:3.19
   script:
-    - mkdir -p public
-    - cp -r htmlcov/* public/
+    - mv htmlcov/ public/
+    - 'echo "Coverage report is available at: https://${CI_PROJECT_NAMESPACE}.gitlab.io/${CI_PROJECT_NAME}/"'
   artifacts:
     paths:
       - public
-    expire_in: 7 days
   only:
     - main
 
@@ -87,4 +101,4 @@ publish:
   artifacts:
     paths:
       - dist/
-    expire_in: 7 days
+    expire_in: 1 week

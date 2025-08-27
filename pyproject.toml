@@ -44,6 +44,15 @@ path = "src/pygnosis/__init__.py"
 [tool.hatch.build.targets.wheel]
 packages = ["src/pygnosis"]
 
+[tool.hatch.build.targets.sdist]
+exclude = [
+    ".venv",
+    ".uv-cache",
+    "**/.venv",
+    "**/.uv-cache",
+    "**/__pycache__",
+]
+
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 python_files = ["test_*.py"]

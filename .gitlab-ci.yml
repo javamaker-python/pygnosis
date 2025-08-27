@@ -21,6 +21,15 @@ cache:
     - curl -LsSf https://astral.sh/uv/install.sh | sh
     - export PATH="$HOME/.local/bin:$PATH"
 
+.build_rules: &build_rules
+  rules:
+    - if: $CI_COMMIT_BRANCH == "main"
+      allow_failure: true
+      when: always
+    - if: '$CI_COMMIT_TAG =~ /^v\d+\.\d+\.\d+$/'
+      allow_failure: true
+      when: manual
+
 linting:ruff:
   stage: test
   <<: *uv_setup
@@ -59,6 +68,7 @@ build:
   script:
     - uv sync --locked --group dev
     - uv build
+  <<: *build_rules
   artifacts:
     paths:
       - dist/
@@ -73,6 +83,7 @@ docs:sphinx:
   script:
     - uv sync --locked --group docs
     - uv run sphinx-build -E -b html docs $SPHINX_OUTPUT
+  <<: *build_rules
   artifacts:
     paths:
       - $SPHINX_OUTPUT
@@ -85,11 +96,10 @@ pages:coverage:
   script:
     - mv htmlcov/ public/
     - 'echo "Coverage report is available at: https://${CI_PROJECT_NAMESPACE}.gitlab.io/${CI_PROJECT_NAME}/"'
+  <<: *build_rules
   artifacts:
     paths:
       - public
-  only:
-    - main
 
 publish:
   stage: publish
@@ -101,7 +111,7 @@ publish:
     - uv build
     - |
       if [ "$TARGET_INDEX" = "testpypi" ]; then
-        uv publish --index-url https://test.pypi.org/legacy/ --token "$TEST_PYPI_TOKEN"
+        uv publish --index testpypi --token "$TEST_PYPI_TOKEN"
       else
         uv publish --token "$PYPI_TOKEN"
       fi

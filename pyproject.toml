@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "pygnosis"
-version = "0.1.1"
+version = "0.1.2"
 description = "A modern, composable health monitoring library for Python applications with hierarchical status aggregation, async support, and flexible configuration system."
 readme = "README.md"
 license = { file = "LICENSE" }

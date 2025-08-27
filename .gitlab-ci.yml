@@ -1,7 +1,7 @@
 stages:
   - test
   - build
-  - pages
+  - deploy
   - publish
 
 variables:
@@ -57,17 +57,27 @@ build:
   needs: ["testing:pytest"]
   <<: *uv_setup
   script:
-    - uv sync --locked --group dev --group docs
+    - uv sync --locked --group dev
     - uv build
-    - uv run sphinx-build -b html docs docs/_build/html
   artifacts:
     paths:
       - dist/
+    expire_in: 1 week
+
+docs:sphinx:
+  stage: build
+  needs: ["linting:ruff"]
+  <<: *uv_setup
+  script:
+    - uv sync --locked --group docs
+    - uv run sphinx-build -E -b html docs docs/_build/html
+  artifacts:
+    paths:
       - docs/_build/html/
     expire_in: 1 week
 
-pages:
-  stage: pages
+pages:coverage:
+  stage: deploy
   needs: ["testing:pytest"]
   image: alpine:3.19
   script:
@@ -81,8 +91,9 @@ pages:
 
 publish:
   stage: publish
-  needs: ["build"]
   <<: *uv_setup
+  variables:
+    TARGET_INDEX: testpypi
   script:
     - uv sync --locked --group dev
     - uv build
@@ -96,8 +107,7 @@ publish:
     - if: '$CI_COMMIT_TAG =~ /^v\d+\.\d+\.\d+$/'
       when: manual
     - when: manual
-  variables:
-    TARGET_INDEX: "testpypi"
+  # allow_failure: true
   artifacts:
     paths:
       - dist/

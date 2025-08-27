@@ -1,0 +1,58 @@
+name: Publish
+
+on:
+  workflow_dispatch:
+    inputs:
+      repository:
+        description: "Target index (pypi or testpypi)"
+        required: true
+        default: "testpypi"
+  push:
+    tags:
+      - "v*.*.*"
+
+jobs:
+  build-and-publish:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Python 3.10
+      uses: actions/setup-python@v5
+      with:
+        python-version: "3.10"
+
+    - name: Install uv
+      run: |
+        curl -LsSf https://astral.sh/uv/install.sh | sh -s -- -y
+        echo "$HOME/.local/bin" >> $GITHUB_PATH
+
+    - name: Sync project (dev)
+      run: uv sync --locked --group dev
+
+    - name: Build dists (sdist+wheel)
+      run: uv build
+
+    - name: Publish to index
+      env:
+        PYPI_TOKEN: ${{ secrets.PYPI_TOKEN }}
+        TEST_PYPI_TOKEN: ${{ secrets.TEST_PYPI_TOKEN }}
+      run: |
+        INDEX="${{ github.event.inputs.repository }}"
+        if [ -z "$INDEX" ]; then INDEX=pypi; fi
+        if [ "$INDEX" = "testpypi" ]; then
+          uv publish --index-url https://test.pypi.org/legacy/ --token "$TEST_PYPI_TOKEN"
+        else
+          uv publish --token "$PYPI_TOKEN"
+        fi
+
+    - name: Upload dist artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: dist
+        path: dist/
+

@@ -1,0 +1,91 @@
+stages:
+  - test
+  - build
+  - pages
+  - publish
+
+variables:
+  PIP_DISABLE_PIP_VERSION_CHECK: "1"
+  UV_CACHE_DIR: "$CI_PROJECT_DIR/.uv-cache"
+
+cache:
+  key: "$CI_COMMIT_REF_SLUG"
+  paths:
+    - .uv-cache/
+    - .venv/
+
+.uv_setup: &uv_setup
+  image: python:3.10-slim
+  before_script:
+    - apt-get update -y && apt-get install -y --no-install-recommends curl ca-certificates git
+    - curl -LsSf https://astral.sh/uv/install.sh | sh -s -- -y
+    - export PATH="$HOME/.local/bin:$PATH"
+
+test:
+  stage: test
+  <<: *uv_setup
+  script:
+    - uv --version
+    - uv sync --locked --group dev
+    - uv run ruff check src/ tests/
+    - uv run pytest --cov=pygnosis --cov-report=xml --cov-report=html --junitxml=report.xml
+  artifacts:
+    when: always
+    paths:
+      - report.xml
+      - coverage.xml
+      - htmlcov/
+    expire_in: 7 days
+
+build:
+  stage: build
+  needs: ["test"]
+  <<: *uv_setup
+  script:
+    - uv sync --locked --group dev --group docs
+    - uv build
+    - uv run sphinx-build -b html docs docs/_build/html
+  artifacts:
+    paths:
+      - dist/
+      - docs/_build/html/
+    expire_in: 7 days
+
+pages:
+  stage: pages
+  needs: ["test"]
+  image: alpine:3.19
+  script:
+    - mkdir -p public
+    - cp -r htmlcov/* public/
+  artifacts:
+    paths:
+      - public
+    expire_in: 7 days
+  only:
+    - main
+
+publish:
+  stage: publish
+  needs: ["build"]
+  <<: *uv_setup
+  script:
+    - uv sync --locked --group dev
+    - uv build
+    - |
+      if [ "$TARGET_INDEX" = "testpypi" ]; then
+        uv publish --index-url https://test.pypi.org/legacy/ --token "$TEST_PYPI_TOKEN"
+      else
+        uv publish --token "$PYPI_TOKEN"
+      fi
+  rules:
+    - if: "$CI_COMMIT_TAG =~ /^v\d+\.\d+\.\d+$/"
+      when: manual
+    - when: manual
+  variables:
+    TARGET_INDEX: "testpypi"
+  artifacts:
+    paths:
+      - dist/
+    expire_in: 7 days
+

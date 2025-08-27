@@ -28,7 +28,7 @@ class Status(str, Enum):
     @staticmethod
     def of(value: bool | None) -> Self:
         """
-        Creates a status based on a boolean value.
+        Returns a status based on a boolean value.
 
         Args:
             value: A boolean value.

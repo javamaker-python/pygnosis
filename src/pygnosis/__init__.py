@@ -4,10 +4,10 @@ __version__ = "0.1.0"
 __author__ = "Ilya Yushin"
 __email__ = "ilya.yushin@gmail.com"
 
-from .composed_indicator import CompositeHealthIndicator, ContainerHealthIndicator
+from .status import Status
 from .health import Health, HealthBuilder
 from .indicator import HealthIndicator, HealthIndicatorProvider
-from .status import Status
+from .composed_indicator import CompositeHealthIndicator, ContainerHealthIndicator
 
 __all__ = [
     "Health",

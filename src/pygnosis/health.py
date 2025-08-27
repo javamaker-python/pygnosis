@@ -9,7 +9,7 @@ from typing import Any, Self
 
 from pydantic import BaseModel
 
-from . import Status
+from .status import Status
 
 
 class Health(BaseModel):

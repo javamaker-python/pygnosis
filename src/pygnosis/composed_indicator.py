@@ -11,7 +11,9 @@ from abc import ABC, abstractmethod
 import asyncio
 import logging
 
-from . import Health, HealthIndicator, Status
+from .health import Health
+from .indicator import HealthIndicator
+from .status import Status
 
 
 logger = logging.getLogger(__name__)

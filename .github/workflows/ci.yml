@@ -43,7 +43,7 @@ jobs:
       uses: codecov/codecov-action@v5
       with:
         name: coverage-html
-        path: htmlcov/
+        directory: htmlcov/
 
     - name: Upload coverage to Codecov
       uses: codecov/codecov-action@v5
